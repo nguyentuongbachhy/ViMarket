@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.ecommerce.grpc.product";
+option java_outer_classname = "ProductProto";
+
+package ecommerce.product;
+
+import "common.proto";
+
+service ProductService {
+  // Search Product Service
+  rpc SearchProduct(SearchProductRequest) returns (ProductResponse);
+  
+  // Product Detail Service
+  rpc GetProductDetail(ProductDetailRequest) returns (ProductResponse);
+  
+  // Category Service
+  rpc GetCategory(CategoryRequest) returns (ProductResponse);
+  
+  // Batch Product Service
+  rpc GetProductsBatch(ProductBatchRequest) returns (ProductBatchResponse);
+  
+  // Streaming Endpoints (reduce latency further)
+  rpc SearchProductStream(SearchProductRequest) returns (stream ProductResponseChunk);
+}
+
+message SearchProductRequest {
+  string query = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message ProductDetailRequest {
+  string product_id = 1;
+  string product_name = 2; // Optional
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message CategoryRequest {
+  string category_id = 1;
+  string category_name = 2; // Optional
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message ProductBatchRequest {
+  repeated string product_ids = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message ProductUIAction {
+  string type = 1;
+  string url = 2;
+  map<string, string> data = 3;
+}
+
+message ProductResponse {
+  string message = 1;
+  ProductUIAction ui_action = 2;
+  ecommerce.common.Status status = 3;
+  double latency_ms = 4;
+  ecommerce.common.Metadata metadata = 5;
+}
+
+message ProductResponseChunk {
+  string chunk = 1;
+  ProductUIAction ui_action = 2;
+  bool finished = 3;
+  ecommerce.common.Status status = 4;
+}
+
+message ProductSummary {
+  string id = 1;
+  string name = 2;
+  string short_description = 3;
+  double price = 4;
+  double original_price = 5;
+  double rating_average = 6;
+  int32 review_count = 7;
+  string inventory_status = 8;
+  int32 quantity_sold = 9;
+  BrandInfo brand = 10;
+  repeated ImageInfo images = 11;
+  repeated CategoryInfo categories = 12;
+}
+
+message BrandInfo {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string country_of_origin = 4;
+}
+
+message ImageInfo {
+  string id = 1;
+  string url = 2;
+  int32 position = 3;
+}
+
+message CategoryInfo {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+  string parent_id = 4;
+  int32 level = 5;
+}
+
+message ProductBatchResponse {
+  repeated ProductSummary products = 1;
+  ecommerce.common.Status status = 2;
+  double latency_ms = 3;
+  ecommerce.common.Metadata metadata = 4;
+}

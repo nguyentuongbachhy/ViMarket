@@ -1,0 +1,114 @@
+{
+    "properties": [
+        {
+            "name": "jwt.secret-key",
+            "type": "java.lang.String",
+            "description": "Secret Key for Application"
+        },
+        {
+            "name": "jwt.algorithm",
+            "type": "java.lang.String",
+            "description": "Algorithm to decode JWT for Application"
+        },
+        {
+            "name": "jwt.expiration-seconds",
+            "type": "java.lang.Integer",
+            "description": "Expiration time for JWT"
+        },
+        {
+            "name": "jwt.issuer",
+            "type": "java.lang.String",
+            "description": "Issuer for authentication"
+        },
+        {
+            "name": "jwt.audience",
+            "type": "java.lang.String",
+            "description": "Audience for authentication"
+        },
+        {
+            "name": "grpc.server.port",
+            "type": "java.lang.Integer",
+            "description": "A description for 'grpc.server.port'"
+        },
+        {
+            "name": "spring.kafka.producer.linger-ms",
+            "type": "java.lang.String",
+            "description": "Linger ms for Kafka producer"
+        },
+        {
+            "name": "grpc.client.inventory.host",
+            "type": "java.lang.String",
+            "description": "gRPC client host"
+        },
+        {
+            "name": "grpc.client.inventory.port",
+            "type": "java.lang.String",
+            "description": "gRPC client port"
+        },
+        {
+            "name": "kafka.topic.product-sales-updated",
+            "type": "java.lang.String",
+            "description": "Product sales updated"
+        },
+        {
+            "name": "kafka.topic.inventory-status-updated",
+            "type": "java.lang.String",
+            "description": "Inventory status updated"
+        },
+        {
+            "name": "kafka.topic.product-rating-updated",
+            "type": "java.lang.String",
+            "description": "Product rating updated"
+        },
+        {
+            "name": "elasticsearch.host",
+            "type": "java.lang.String",
+            "description": "A description for 'elasticsearch.host'"
+        },
+        {
+            "name": "elasticsearch.port",
+            "type": "java.lang.String",
+            "description": "A description for 'elasticsearch.port'"
+        },
+        {
+            "name": "elasticsearch.username",
+            "type": "java.lang.String",
+            "description": "A description for 'elasticsearch.username'"
+        },
+        {
+            "name": "elasticsearch.password",
+            "type": "java.lang.String",
+            "description": "A description for 'elasticsearch.password'"
+        },
+        {
+            "name": "embedding.model.path",
+            "type": "java.lang.String",
+            "description": "A description for 'embedding.model.path'"
+        },
+        {
+            "name": "embedding.dimension",
+            "type": "java.lang.Integer",
+            "description": "A description for 'embedding.dimension'"
+        },
+        {
+            "name": "search.similarity.threshold",
+            "type": "java.lang.String",
+            "description": "A description for 'search.similarity.threshold'"
+        },
+        {
+            "name": "search.default.size",
+            "type": "java.lang.String",
+            "description": "A description for 'search.default.size'"
+        },
+        {
+            "name": "search.max.size",
+            "type": "java.lang.String",
+            "description": "A description for 'search.max.size'"
+        },
+        {
+            "name": "elasticsearch.enabled",
+            "type": "java.lang.String",
+            "description": "A description for 'elasticsearch.enabled'"
+        }
+    ]
+}

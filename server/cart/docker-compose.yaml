@@ -1,0 +1,27 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: cart-redis
+    restart: always
+    ports:
+      - "6380:6379"
+    environment:
+      - REDIS_PASSWORD=spring
+    command: redis-server --requirepass spring --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - ecommerce-shared-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:
+
+
+networks:
+  ecommerce-shared-network:
+    external: true

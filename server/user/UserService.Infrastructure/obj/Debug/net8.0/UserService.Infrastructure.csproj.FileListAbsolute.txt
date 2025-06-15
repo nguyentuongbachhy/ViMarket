@@ -1,0 +1,17 @@
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Infrastructure.deps.json
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Infrastructure.runtimeconfig.json
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Infrastructure.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Infrastructure.pdb
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Core.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/bin/Debug/net8.0/UserService.Core.pdb
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.csproj.AssemblyReference.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.AssemblyInfoInputs.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.AssemblyInfo.cs
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.csproj.CoreCompileInputs.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/refint/UserService.Infrastructure.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.pdb
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserService.Infrastructure.genruntimeconfig.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/ref/UserService.Infrastructure.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Infrastructure/obj/Debug/net8.0/UserServ.28B62BA0.Up2Date
