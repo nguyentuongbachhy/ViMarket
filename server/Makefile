@@ -67,6 +67,21 @@ wishlist:
 	@sleep 5
 	@echo "✅ Wishlist service started"
 
+# Start chatbot service
+chatbot:
+	@echo "🚀 Starting Chatbot service..."
+	cd chatbot && python -m main
+	@sleep 5
+	@echo "✅ Chatbot service started"
+
+# Start review service
+review:
+	@echo "🚀 Starting Review service..."
+	cd review && python -m app.main
+	@sleep 5
+	@echo "✅ Review service started"
+
+
 # Start API gateway
 api-gateway:
 	@echo "🚀 Starting API gateway..."

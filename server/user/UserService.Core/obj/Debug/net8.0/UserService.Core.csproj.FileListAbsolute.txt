@@ -6,6 +6,7 @@
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.AssemblyInfoInputs.cache
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.AssemblyInfo.cs
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.csproj.CoreCompileInputs.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.sourcelink.json
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.dll
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/refint/UserService.Core.dll
 /home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.pdb

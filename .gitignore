@@ -1,11 +1,16 @@
 # Bỏ qua toàn bộ nội dung trong thư mục chat-ui
-/chat-ui/*
+/chat-ui/
 
 # Bỏ qua toàn bộ nội dung trong thư mục server/data
-/server/data/*
+/server/data/
 
 # Bỏ qua toàn bộ nội dung trong thư mục server/docs
-/server/docs/*
+/server/docs/
 
 # Bỏ qua tất cả các file .env nằm trong bất kỳ thư mục con cấp 2 (/*/*/)
-*/*/.env
+**/.env
+
+# Bỏ qua node_modules trong mọi thư mục con (bao gồm cả chat-ui, server, ...)
+**/node_modules/
+
+__pycache__/

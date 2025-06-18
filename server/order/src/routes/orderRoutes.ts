@@ -8,42 +8,26 @@ import { Router } from 'express';
 const router: Router = Router();
 const logger = new Logger('OrderRoutes');
 
+// ✅ Main checkout endpoint
 router.post('/checkout', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const userId = req.user!.userId;
         const userEmail = req.user!.email;
         const request: CheckoutRequest = req.body;
 
-        if (!request.shippingAddress || !request.paymentMethod) {
-            ResponseUtils.badRequest(res, 'Shipping address and payment method are required');
-            return;
-        }
-
-        if (!request.useCart && (!request.items || request.items.length === 0)) {
-            ResponseUtils.badRequest(res, 'Items are required when not using cart');
-            return;
-        }
-
-        // ✅ Truyền email từ JWT
         const order = await orderService.checkout(userId, userEmail, request);
-
-        ResponseUtils.success(res, order, 'Checkout completed successfully! Order confirmation email has been sent.', 201);
+        ResponseUtils.success(res, order, 'Checkout completed successfully!', 201);
     } catch (error: any) {
         logger.error('Checkout failed', { error, userId: req.user?.userId });
         ResponseUtils.error(res, error.message || 'Checkout failed');
     }
 });
 
-// Các routes khác giữ nguyên...
+// ✅ Create order from items
 router.post('/create', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const userId = req.user!.userId;
         const request: CreateOrderRequest = req.body;
-
-        if (!request.items || !request.shippingAddress || !request.paymentMethod) {
-            ResponseUtils.badRequest(res, 'Missing required fields');
-            return;
-        }
 
         const order = await orderService.createOrder(userId, request);
         ResponseUtils.success(res, order, 'Order created successfully', 201);
@@ -53,15 +37,11 @@ router.post('/create', AuthMiddleware.authenticate, async (req: AuthenticatedReq
     }
 });
 
+// ✅ Create order from cart
 router.post('/from-cart', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const userId = req.user!.userId;
         const request: CreateOrderFromCartRequest = req.body;
-
-        if (!request.shippingAddress || !request.paymentMethod) {
-            ResponseUtils.badRequest(res, 'Missing required fields');
-            return;
-        }
 
         const order = await orderService.createOrderFromCart(userId, request);
         ResponseUtils.success(res, order, 'Order created from cart successfully', 201);
@@ -71,6 +51,7 @@ router.post('/from-cart', AuthMiddleware.authenticate, async (req: Authenticated
     }
 });
 
+// ✅ Get user orders
 router.get('/my-orders', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const userId = req.user!.userId;
@@ -84,6 +65,7 @@ router.get('/my-orders', AuthMiddleware.authenticate, async (req: AuthenticatedR
     }
 });
 
+// ✅ Get order by ID
 router.get('/:orderId', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const { orderId } = req.params;
@@ -99,16 +81,15 @@ router.get('/:orderId', AuthMiddleware.authenticate, async (req: AuthenticatedRe
         ResponseUtils.success(res, order, 'Order retrieved successfully');
     } catch (error: any) {
         logger.error('Failed to get order', { error, orderId: req.params.orderId });
-
         if (error.message === 'Order not found') {
             ResponseUtils.notFound(res, 'Order not found');
             return;
         }
-
         ResponseUtils.error(res, 'Failed to retrieve order');
     }
 });
 
+// ✅ Cancel order
 router.post('/:orderId/cancel', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
     try {
         const { orderId } = req.params;
@@ -117,19 +98,30 @@ router.post('/:orderId/cancel', AuthMiddleware.authenticate, async (req: Authent
         const order = await orderService.cancelOrder(orderId, userId);
         ResponseUtils.success(res, order, 'Order cancelled successfully');
     } catch (error: any) {
-        logger.error('Failed to cancel order', { error, orderId: req.params.orderId, userId: req.user?.userId });
-
+        logger.error('Failed to cancel order', { error, orderId: req.params.orderId });
         if (error.message === 'Order not found') {
             ResponseUtils.notFound(res, 'Order not found');
             return;
         }
-
         if (error.message.includes('Unauthorized') || error.message.includes('Cannot cancel')) {
             ResponseUtils.badRequest(res, error.message);
             return;
         }
-
         ResponseUtils.error(res, 'Failed to cancel order');
+    }
+});
+
+// ✅ Check user purchase
+router.get('/check-purchase/:productId', AuthMiddleware.authenticate, async (req: AuthenticatedRequest, res) => {
+    try {
+        const { productId } = req.params;
+        const userId = req.user!.userId;
+
+        const hasPurchased = await orderService.hasUserPurchasedProduct(userId, productId);
+        ResponseUtils.success(res, { hasPurchased, productId, userId }, 'Purchase check completed');
+    } catch (error: any) {
+        logger.error('Failed to check user purchase', { error, productId: req.params.productId });
+        ResponseUtils.error(res, 'Failed to check purchase status');
     }
 });
 

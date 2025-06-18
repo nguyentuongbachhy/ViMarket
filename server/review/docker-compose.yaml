@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: review-db
+    ports:
+      - "5444:5432"
+    environment:
+      POSTGRES_DB: review_db
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: spring
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-shared-network
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce-shared-network:
+    external: true

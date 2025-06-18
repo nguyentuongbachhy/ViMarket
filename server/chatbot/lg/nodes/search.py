@@ -10,29 +10,27 @@ async def search_products(state: ChatState) -> ChatState:
     
     try:
         if intent == "search_product":
-            # Process brand filter
-            if filters.get("brand"):
+            api_filters = filters.copy()
+            
+            if api_filters.get("brand"):
                 brands_response = await ProductTools.get_brands()
                 if brands_response.get("status") == "success":
                     brands = brands_response["data"]
-                    brand_id = next((b["id"] for b in brands if b["name"].lower() == filters["brand"].lower()), None)
+                    brand_id = next((b["id"] for b in brands if b["name"].lower() == api_filters["brand"].lower()), None)
                     if brand_id:
-                        filters["brandIds"] = [brand_id]
-                        del filters["brand"]
+                        api_filters["brandIds"] = [brand_id]
+                        del api_filters["brand"]
             
-            # Process category filter
-            if filters.get("category"):
+            if api_filters.get("category"):
                 categories_response = await ProductTools.get_categories()
                 if categories_response.get("status") == "success":
                     categories = categories_response["data"]
-                    category_id = next((c["id"] for c in categories if c["name"].lower() == filters["category"].lower()), None)
+                    category_id = next((c["id"] for c in categories if c["name"].lower() == api_filters["category"].lower()), None)
                     if category_id:
-                        filters["categoryIds"] = [category_id]
-                        del filters["category"]
+                        api_filters["categoryIds"] = [category_id]
+                        del api_filters["category"]
             
-            
-            # Search products
-            result = await ProductTools.search_products(filters)
+            result = await ProductTools.search_products(api_filters)
             
             if result.get("status") == "error":
                 if "timeout" in result.get("message", "").lower():
@@ -47,14 +45,17 @@ async def search_products(state: ChatState) -> ChatState:
         elif intent in ["get_top_rated", "top_rated"]:
             result = await ProductTools.get_top_rated()
             new_state["search_results"] = result
+            new_state["filters"] = {**filters, "sortBy": "ratingAverage", "direction": "desc"}
             
         elif intent in ["get_top_selling", "top_selling"]:
             result = await ProductTools.get_top_selling()
             new_state["search_results"] = result
+            new_state["filters"] = {**filters, "sortBy": "allTimeQuantitySold", "direction": "desc"}
             
         elif intent in ["get_new_arrivals", "new_arrivals"]:
             result = await ProductTools.get_new_arrivals()
             new_state["search_results"] = result
+            new_state["filters"] = {**filters, "sortBy": "createdAt", "direction": "desc"}
             
     except Exception as e:
         import traceback

@@ -1,4 +1,3 @@
-// server.ts
 import { config } from '@/config';
 import { cartGrpcServer } from '@/grpc/cartGrpcServer';
 import { inventoryGrpcClient } from '@/grpc/inventoryClient';
@@ -208,6 +207,9 @@ class CartServer {
       // Start HTTP server
       await this.startHttpServer();
 
+      // ✅ ADD: Start gRPC server
+      await this.startGrpcServer();
+
       // Setup graceful shutdown
       this.setupGracefulShutdown();
 
@@ -224,6 +226,20 @@ class CartServer {
       process.exit(1);
     }
   }
+
+  private async startGrpcServer(): Promise<void> {
+    try {
+      await cartGrpcServer.start();
+      logger.info('✅ Cart gRPC server started successfully', {
+        host: config.grpc.server.host,
+        port: config.grpc.server.port
+      });
+    } catch (error) {
+      logger.error('❌ Failed to start Cart gRPC server', error);
+      throw error;
+    }
+  }
+
 
   private async waitForDependencies(): Promise<void> {
     logger.info('⏳ Waiting for dependencies to be ready...');
@@ -589,6 +605,20 @@ class CartServer {
           logger.info('✅ Health monitoring stopped');
         }
 
+        // ✅ ADD: Close gRPC server FIRST
+        logger.info('🔌 Closing Cart gRPC server...');
+        try {
+          await Promise.race([
+            cartGrpcServer.stop(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('gRPC server close timeout')), 5000)
+            )
+          ]);
+          logger.info('✅ Cart gRPC server closed');
+        } catch (error) {
+          logger.error('❌ Failed to close Cart gRPC server', error);
+        }
+
         // Close gRPC clients
         logger.info('🔌 Closing gRPC clients...');
         try {
@@ -611,9 +641,6 @@ class CartServer {
         } catch (error) {
           logger.error('❌ Failed to close gRPC clients', error);
         }
-
-        // Close gRPC server
-        await cartGrpcServer.stop();
 
         // Disconnect from Redis
         logger.info('🔌 Disconnecting from Redis...');

@@ -20,6 +20,7 @@ type ServiceProxy struct {
 	cartProxy     *httputil.ReverseProxy
 	wishlistProxy *httputil.ReverseProxy
 	orderProxy    *httputil.ReverseProxy
+	reviewProxy   *httputil.ReverseProxy
 	config        *config.Config
 	logger        *logrus.Logger
 }
@@ -55,12 +56,18 @@ func NewServiceProxy(cfg *config.Config, logger *logrus.Logger) (*ServiceProxy, 
 		return nil, err
 	}
 
+	reviewURL, err := url.Parse(cfg.Services.Review)
+	if err != nil {
+		return nil, err
+	}
+
 	chatbotProxy := httputil.NewSingleHostReverseProxy(chatbotURL)
 	userProxy := httputil.NewSingleHostReverseProxy(userURL)
 	productProxy := httputil.NewSingleHostReverseProxy(productURL)
 	cartProxy := httputil.NewSingleHostReverseProxy(cartURL)
 	wishlistProxy := httputil.NewSingleHostReverseProxy(wishlistURL)
 	orderProxy := httputil.NewSingleHostReverseProxy(orderURL)
+	reviewProxy := httputil.NewSingleHostReverseProxy(reviewURL)
 
 	configureProxy(chatbotProxy, "chatbot", logger)
 	configureProxy(userProxy, "user", logger)
@@ -68,6 +75,7 @@ func NewServiceProxy(cfg *config.Config, logger *logrus.Logger) (*ServiceProxy, 
 	configureProxy(cartProxy, "cart", logger)
 	configureProxy(wishlistProxy, "wishlist", logger)
 	configureProxy(orderProxy, "order", logger)
+	configureProxy(reviewProxy, "review", logger)
 
 	return &ServiceProxy{
 		chatbotProxy:  chatbotProxy,
@@ -76,6 +84,7 @@ func NewServiceProxy(cfg *config.Config, logger *logrus.Logger) (*ServiceProxy, 
 		cartProxy:     cartProxy,
 		wishlistProxy: wishlistProxy,
 		orderProxy:    orderProxy,
+		reviewProxy:   reviewProxy,
 		config:        cfg,
 		logger:        logger,
 	}, nil
@@ -109,15 +118,22 @@ func (p *ServiceProxy) Handle() http.HandlerFunc {
 			}).Info("Routing to Wishlist service")
 
 			p.wishlistProxy.ServeHTTP(w, r)
+		} else if strings.HasPrefix(path, "/reviews") {
+			p.logger.WithFields(logrus.Fields{
+				"service": "reviews",
+				"path":    r.URL.Path,
+				"method":  r.Method,
+			}).Info("Routing to Review service")
+
+			p.reviewProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(path, "/orders") ||
-			strings.HasPrefix(path, "/checkout") {
+			strings.HasPrefix(path, "/orders-admin") {
 			p.logger.WithFields(logrus.Fields{
 				"service": "order",
 				"path":    r.URL.Path,
 				"method":  r.Method,
 			}).Info("Routing to Order service")
 
-			// THÊM DÒNG NÀY - đây là phần bị thiếu!
 			p.orderProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(path, "/chat") || strings.HasPrefix(path, "/history") {
 			p.logger.WithFields(logrus.Fields{
@@ -137,8 +153,7 @@ func (p *ServiceProxy) Handle() http.HandlerFunc {
 			p.userProxy.ServeHTTP(w, r)
 		} else if strings.HasPrefix(path, "/products") ||
 			strings.HasPrefix(path, "/categories") ||
-			strings.HasPrefix(path, "/brands") ||
-			strings.HasPrefix(path, "/reviews") {
+			strings.HasPrefix(path, "/brands") {
 			p.logger.WithFields(logrus.Fields{
 				"service": "product",
 				"path":    r.URL.Path,

@@ -7,11 +7,26 @@ using UserService.Core.Interfaces;
 using UserService.Infrastructure.Data;
 using UserService.Infrastructure.Repositories;
 using UserService.Infrastructure.Services;
+using UserService.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+
+// Add gRPC with configuration
+builder.Services.AddGrpc(options =>
+{
+    var grpcSettings = builder.Configuration.GetSection("GrpcSettings");
+    
+    if (grpcSettings.GetValue<int?>("MaxReceiveMessageSize") is int maxReceive)
+        options.MaxReceiveMessageSize = maxReceive;
+    
+    if (grpcSettings.GetValue<int?>("MaxSendMessageSize") is int maxSend)
+        options.MaxSendMessageSize = maxSend;
+    
+    options.EnableDetailedErrors = grpcSettings.GetValue<bool>("EnableDetailedErrors");
+});
 
 // Add database context
 builder.Services.AddDbContext<UserDbContext>(options =>
@@ -102,5 +117,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map gRPC service
+app.MapGrpcService<UserGrpcService>();
+
+// Map REST controllers
+app.MapControllers();
+
+// Health check endpoint
+app.MapGet("/health", () => Results.Ok(new { 
+    status = "healthy", 
+    timestamp = DateTime.UtcNow,
+    endpoints = new { 
+        rest = "http://localhost:5009",
+        grpc = "http://localhost:50052"
+    }
+}));
 
 app.Run();

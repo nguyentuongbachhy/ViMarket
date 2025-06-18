@@ -292,8 +292,8 @@ export class CartGrpcServer {
                 total_price: item.totalPrice,
                 is_available: item.isAvailable,
                 available_quantity: item.availableQuantity,
-                added_at: item.addedAt.toISOString(),
-                updated_at: item.updatedAt.toISOString(),
+                added_at: this.toISOString(item.addedAt),
+                updated_at: this.toISOString(item.updatedAt),
             })),
             total_items: cart.totalItems,
             pricing: {
@@ -307,10 +307,46 @@ export class CartGrpcServer {
                 free_shipping_threshold: cart.pricing.freeShippingThreshold,
                 item_count: cart.pricing.itemCount,
             },
-            created_at: cart.createdAt.toISOString(),
-            updated_at: cart.updatedAt.toISOString(),
-            expires_at: cart.expiresAt.toISOString(),
+            created_at: this.toISOString(cart.createdAt),
+            updated_at: this.toISOString(cart.updatedAt),
+            expires_at: this.toISOString(cart.expiresAt),
         };
+    }
+
+    private toISOString(dateValue: any): string {
+        try {
+            if (!dateValue) {
+                return new Date().toISOString();
+            }
+
+            // If already a string, return as is
+            if (typeof dateValue === 'string') {
+                return dateValue;
+            }
+
+            // If it's a Date object, convert to ISO string
+            if (dateValue instanceof Date) {
+                return dateValue.toISOString();
+            }
+
+            // If it's a timestamp number, convert to Date first
+            if (typeof dateValue === 'number') {
+                return new Date(dateValue).toISOString();
+            }
+
+            // Try to parse as Date
+            const parsed = new Date(dateValue);
+            if (!isNaN(parsed.getTime())) {
+                return parsed.toISOString();
+            }
+
+            // Fallback to current time
+            logger.warn('Could not parse date value, using current time', { dateValue });
+            return new Date().toISOString();
+        } catch (error) {
+            logger.error('Error converting date to ISO string', { error, dateValue });
+            return new Date().toISOString();
+        }
     }
 
     async start(): Promise<void> {

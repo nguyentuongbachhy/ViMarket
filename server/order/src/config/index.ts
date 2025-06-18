@@ -31,6 +31,7 @@ interface GrpcConfig {
     inventoryService: GrpcServiceConfig;
     productService: GrpcServiceConfig;
     cartService: GrpcServiceConfig;
+    userService: GrpcServiceConfig;
 }
 
 interface OrderConfig {
@@ -126,6 +127,12 @@ export const config: Config = {
         cartService: {
             host: getEnvVar('GRPC_HOST', 'localhost'),
             port: getEnvNumber('CART_GRPC_PORT', 50055),
+            timeout: getEnvNumber('GRPC_TIMEOUT', 30000),
+            maxRetries: getEnvNumber('GRPC_MAX_RETRIES', 3),
+        },
+        userService: {
+            host: getEnvVar('GRPC_HOST', 'localhost'),
+            port: getEnvNumber('USER_GRPC_PORT', 50056),
             timeout: getEnvNumber('GRPC_TIMEOUT', 30000),
             maxRetries: getEnvNumber('GRPC_MAX_RETRIES', 3),
         }

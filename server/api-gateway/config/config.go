@@ -29,6 +29,7 @@ type ServicesConfig struct {
 	Cart     string `mapstructure:"cart"`
 	Wishlist string `mapstructure:"wishlist"`
 	Order    string `mapstructure:"order"`
+	Review   string `mapstructure:"review"`
 }
 
 type JWTConfig struct {
@@ -60,6 +61,7 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("services.cart", "http://localhost:8002")
 	viper.SetDefault("services.wishlist", "http://localhost:8084")
 	viper.SetDefault("services.order", "http://localhost:8004")
+	viper.SetDefault("services.review", "http://localhost:8005")
 
 	viper.SetDefault("jwt.secret_key", "jYNKRd9KDzX+IG+6KWz31IXr+QX5GAQ1Svr3LWkzUSP3DpjKm4zsrlbf8B9b14EH")
 	viper.SetDefault("jwt.algorithm", "HS512")

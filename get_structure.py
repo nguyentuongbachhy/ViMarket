@@ -15,9 +15,9 @@ def build_tree(dir_path, prefix=''):
 
 if __name__ == '__main__':
     tree_lines = ["# Cấu trúc thư mục\n"]
-    tree_lines.extend(build_tree('server/product'))
+    tree_lines.extend(build_tree('server/user'))
 
-    output_path = 'server/product/structure.md'
+    output_path = 'server/user/structure.md'
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(tree_lines))
 
