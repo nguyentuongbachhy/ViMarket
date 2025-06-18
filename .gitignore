@@ -13,4 +13,6 @@
 # Bỏ qua node_modules trong mọi thư mục con (bao gồm cả chat-ui, server, ...)
 **/node_modules/
 
+**/credentials.json
+
 __pycache__/

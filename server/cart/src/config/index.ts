@@ -96,6 +96,13 @@ interface Config {
     redis: RedisConfig;
     jwt: JwtConfig;
     grpc: GrpcConfig;
+    kafka: {
+        clientId: string;
+        brokers: string[];
+        topics: {
+            cartExpiration: string;
+        };
+    };
     cart: CartConfig;
     pricing: PricingConfig;
     rateLimit: RateLimitConfig;
@@ -204,6 +211,14 @@ const config: Config = {
             host: getEnvVar('GRPC_SERVER_HOST', 'localhost'),
             port: getEnvNumber('GRPC_SERVER_PORT', 50055)
         }
+    },
+
+    kafka: {
+        clientId: getEnvVar('KAFKA_CLIENT_ID', 'cart-service'),
+        brokers: getEnvVar('KAFKA_BROKERS', 'localhost:9092').split(','),
+        topics: {
+            cartExpiration: getEnvVar('KAFKA_TOPIC_CART_EXPIRATION', 'cart.expiration.reminder'),
+        },
     },
 
     cart: {

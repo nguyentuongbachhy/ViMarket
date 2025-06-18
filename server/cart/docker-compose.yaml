@@ -21,7 +21,6 @@ services:
 volumes:
   redis-data:
 
-
 networks:
   ecommerce-shared-network:
     external: true
