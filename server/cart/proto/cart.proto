@@ -1,0 +1,141 @@
+syntax = "proto3";
+
+option go_package = "cart-service/proto/cart";
+package ecommerce.cart;
+
+import "common.proto";
+
+service CartService {
+  rpc GetCart(GetCartRequest) returns (GetCartResponse);
+  rpc PrepareCheckout(PrepareCheckoutRequest) returns (PrepareCheckoutResponse);
+  rpc ClearCart(ClearCartRequest) returns (ClearCartResponse);
+  rpc ValidateCart(ValidateCartRequest) returns (ValidateCartResponse);
+}
+
+message GetCartRequest {
+  string user_id = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message GetCartResponse {
+  CartData cart = 1;
+  ecommerce.common.Status result_status = 2;
+  double latency_ms = 3;
+}
+
+message PrepareCheckoutRequest {
+  string user_id = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message PrepareCheckoutResponse {
+  CartData cart = 1;
+  CartValidation validation = 2;
+  CheckoutSummary summary = 3;
+  ecommerce.common.Status result_status = 4;
+  double latency_ms = 5;
+}
+
+message ClearCartRequest {
+  string user_id = 1;
+  string reason = 2;
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message ClearCartResponse {
+  bool success = 1;
+  ecommerce.common.Status result_status = 2;
+  double latency_ms = 3;
+}
+
+message ValidateCartRequest {
+  string user_id = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message ValidateCartResponse {
+  CartValidation validation = 1;
+  ecommerce.common.Status result_status = 2;
+  double latency_ms = 3;
+}
+
+message CartData {
+  string user_id = 1;
+  repeated CartItemData items = 2;
+  int32 total_items = 3;
+  CartPricing pricing = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  string expires_at = 7;
+}
+
+message CartItemData {
+  string product_id = 1;
+  int32 quantity = 2;
+  ProductData product = 3;
+  double total_price = 4;
+  bool is_available = 5;
+  int32 available_quantity = 6;
+  string added_at = 7;
+  string updated_at = 8;
+}
+
+message ProductData {
+  string id = 1;
+  string name = 2;
+  string short_description = 3;
+  double price = 4;
+  double original_price = 5;
+  double rating_average = 6;
+  int32 review_count = 7;
+  string inventory_status = 8;
+  int32 quantity_sold = 9;
+  BrandData brand = 10;
+  repeated ImageData images = 11;
+  repeated CategoryData categories = 12;
+}
+
+message BrandData {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  string country_of_origin = 4;
+}
+
+message ImageData {
+  string id = 1;
+  string url = 2;
+  int32 position = 3;
+}
+
+message CategoryData {
+  string id = 1;
+  string name = 2;
+  string url = 3;
+  string parent_id = 4;
+  int32 level = 5;
+}
+
+message CartPricing {
+  double subtotal = 1;
+  double tax = 2;
+  double shipping = 3;
+  double discount = 4;
+  double total = 5;
+  string currency = 6;
+  double tax_rate = 7;
+  double free_shipping_threshold = 8;
+  int32 item_count = 9;
+}
+
+message CartValidation {
+  bool is_valid = 1;
+  repeated string errors = 2;
+  repeated string invalid_items = 3;
+}
+
+message CheckoutSummary {
+  int32 item_count = 1;
+  double total_amount = 2;
+  bool is_ready_for_checkout = 3;
+}

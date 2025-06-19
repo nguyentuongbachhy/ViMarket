@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventory-postgres
+    restart: always
+    ports:
+      - "5440:5432"
+    environment:
+      POSTGRES_DB: ecommerce_inventory
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: spring
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./internal/infrastructure/database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce-shared-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U spring -d ecommerce_inventory" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+
+
+networks:
+  ecommerce-shared-network:
+    external: true

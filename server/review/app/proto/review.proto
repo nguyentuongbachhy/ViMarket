@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package ecommerce.review;
+
+import "common.proto";
+
+service ReviewService {
+  rpc GetProductReviews(GetProductReviewsRequest) returns (GetProductReviewsResponse);
+  rpc GetReviewStats(GetReviewStatsRequest) returns (GetReviewStatsResponse);
+}
+
+message GetProductReviewsRequest {
+  string productId = 1;
+  int32 page = 2;
+  int32 size = 3;
+  int32 level = 4; // 1 for root reviews, >= 2 for replies
+}
+
+message GetProductReviewsResponse {
+  ecommerce.common.Status status = 1;
+  repeated ReviewInfo reviews = 2;
+  PaginationInfo pagination = 3;
+}
+
+message GetReviewStatsRequest {
+  string productId = 1;
+}
+
+message GetReviewStatsResponse {
+  ecommerce.common.Status status = 1;
+  ReviewStats stats = 2;
+}
+
+message ReviewInfo {
+  string id = 1;
+  string productId = 2;
+  string userId = 3;
+  UserInfo user = 4;
+  double rating = 5;
+  string title = 6;
+  string content = 7;
+  int32 helpfulVotes = 8;
+  bool verifiedPurchase = 9;
+  string reviewDate = 10;
+  string sentiment = 11; // LIKE, NEUTRAL, DISLIKE
+  int32 level = 12;
+  string parentId = 13;
+  int32 replyCount = 14;
+}
+
+message ReviewStats {
+  double averageRating = 1;
+  int32 totalReviews = 2;
+  RatingBreakdown ratingBreakdown = 3;
+}
+
+message RatingBreakdown {
+  int32 fiveStar = 1;
+  int32 fourStar = 2;
+  int32 threeStar = 3;
+  int32 twoStar = 4;
+  int32 oneStar = 5;
+}
+
+message PaginationInfo {
+  int32 page = 1;
+  int32 size = 2;
+  int32 total = 3;
+  int32 totalPages = 4;
+}
+
+message UserInfo {
+  string id = 1;
+  string username = 2;
+  string fullName = 3;
+  string avatar = 4;
+}

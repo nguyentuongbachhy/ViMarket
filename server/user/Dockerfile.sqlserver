@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+USER root
+
+# Sao chép script khởi tạo vào container
+COPY scripts/init-userdb.sql /docker-entrypoint-initdb.d/
+COPY scripts/init-sqlserver.sh /docker-entrypoint-initdb.d/
+
+# Đặt quyền thực thi cho script
+RUN chmod +x /docker-entrypoint-initdb.d/init-sqlserver.sh
+
+# Thiết lập biến môi trường
+ENV ACCEPT_EULA=Y
+ENV MSSQL_SA_PASSWORD=Ntbh08032004@sqlserver
+ENV MSSQL_PID=Express
+
+# Mở port
+EXPOSE 1433
+
+# Khởi động SQL Server và chạy script khởi tạo
+CMD ["/bin/bash", "-c", "/opt/mssql/bin/sqlservr & /docker-entrypoint-initdb.d/init-sqlserver.sh & wait"]

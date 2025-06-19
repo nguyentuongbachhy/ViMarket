@@ -1,0 +1,29 @@
+services:
+  postgres-orders:
+    image: postgres:15-alpine
+    container_name: ecommerce-orders-db
+    ports:
+      - "5442:5432"
+    environment:
+      POSTGRES_DB: ecommerce_orders
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: spring
+    volumes:
+      - postgres_orders_data:/var/lib/postgresql/data
+      - ./src/database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spring -d ecommerce_orders"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_orders_data:
+    driver: local
+
+networks:
+  ecommerce-network:
+    driver: bridge
+    external: false

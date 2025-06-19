@@ -1,0 +1,32 @@
+services:
+  # Database cho User Service (.NET)
+  sqlserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlserver
+    container_name: user-service-db
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: /opt/mssql/bin/sqlcmd -S localhost -U sa -P "Ntbh08032004@sqlserver" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Database Admin tool
+  adminer:
+    image: adminer:latest
+    container_name: db-admin
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - sqlserver
+    environment:
+      - ADMINER_DESIGN=pepa-linha
+
+volumes:
+  sqlserver_data:

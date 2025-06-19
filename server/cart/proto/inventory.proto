@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+option go_package = "inventory-service/proto/inventory";
+package ecommerce.inventory;
+
+import "common.proto";
+
+service InventoryService {
+  rpc CheckInventory(CheckInventoryRequest) returns (CheckInventoryResponse);
+  rpc CheckInventoryBatch(CheckInventoryBatchRequest) returns (CheckInventoryBatchResponse);
+  rpc ReserveInventory(ReserveInventoryRequest) returns (ReserveInventoryResponse);
+  rpc ConfirmReservation(ConfirmReservationRequest) returns (ConfirmReservationResponse);
+  rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse);
+  rpc UpdateInventory(UpdateInventoryRequest) returns (UpdateInventoryResponse);
+  rpc GetInventoryHistory(GetInventoryHistoryRequest) returns (GetInventoryHistoryResponse);
+}
+
+message CheckInventoryRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+  ecommerce.common.Metadata metadata = 3;
+  optional ProductInfo product_info = 4;
+}
+
+message ProductInfo {
+  string inventory_status = 1;
+  string name = 2;
+  double price = 3;
+}
+
+message CheckInventoryResponse {
+  string product_id = 1;
+  bool available = 2;
+  int32 available_quantity = 3;
+  string status = 4;
+  ecommerce.common.Status result_status = 5;
+  double latency_ms = 6;
+}
+
+message CheckInventoryBatchRequest {
+  repeated InventoryItem items = 1;
+  ecommerce.common.Metadata metadata = 2;
+}
+
+message CheckInventoryBatchResponse {
+  repeated InventoryStatus items = 1;
+  ecommerce.common.Status result_status = 2;
+  double latency_ms = 3;
+}
+
+message ReserveInventoryRequest {
+  string reservation_id = 1;
+  string user_id = 2;
+  repeated InventoryItem items = 3;
+  int64 expires_at = 4;
+  ecommerce.common.Metadata metadata = 5;
+}
+
+message ReserveInventoryResponse {
+  string reservation_id = 1;
+  repeated ReservationResult results = 2;
+  bool all_reserved = 3;
+  ecommerce.common.Status result_status = 4;
+  double latency_ms = 5;
+}
+
+message ConfirmReservationRequest {
+  string reservation_id = 1;
+  string order_id = 2;
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message ConfirmReservationResponse {
+  string reservation_id = 1;
+  string order_id = 2;
+  repeated InventoryUpdate updates = 3;
+  bool success = 4;
+  ecommerce.common.Status result_status = 5;
+  double latency_ms = 6;
+}
+
+message CancelReservationRequest {
+  string reservation_id = 1;
+  string reason = 2;
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message CancelReservationResponse {
+  string reservation_id = 1;
+  bool success = 2;
+  ecommerce.common.Status result_status = 3;
+  double latency_ms = 4;
+}
+
+message UpdateInventoryRequest {
+  repeated InventoryUpdate updates = 1;
+  string reason = 2;
+  ecommerce.common.Metadata metadata = 3;
+}
+
+message UpdateInventoryResponse {
+  repeated InventoryUpdateResult results = 1;
+  bool all_updated = 2;
+  ecommerce.common.Status result_status = 3;
+  double latency_ms = 4;
+}
+
+message GetInventoryHistoryRequest {
+  string product_id = 1;
+  int32 limit = 2;
+  int64 from_timestamp = 3;
+  int64 to_timestamp = 4;
+  ecommerce.common.Metadata metadata = 5;
+}
+
+message GetInventoryHistoryResponse {
+  repeated InventoryHistoryEntry entries = 1;
+  ecommerce.common.Status result_status = 2;
+  double latency_ms = 3;
+}
+
+message InventoryItem {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
+message InventoryStatus {
+  string product_id = 1;
+  bool available = 2;
+  int32 available_quantity = 3;
+  int32 reserved_quantity = 4;
+  string status = 5;
+  string error_message = 6;
+}
+
+message ReservationResult {
+  string product_id = 1;
+  int32 requested_quantity = 2;
+  int32 reserved_quantity = 3;
+  bool success = 4;
+  string error_message = 5;
+}
+
+message InventoryUpdate {
+  string product_id = 1;
+  int32 quantity_change = 2;
+  string operation_type = 3;
+  string reference_id = 4;
+}
+
+message InventoryUpdateResult {
+  string product_id = 1;
+  int32 old_quantity = 2;
+  int32 new_quantity = 3;
+  string new_status = 4;
+  bool success = 5;
+  string error_message = 6;
+}
+
+message InventoryHistoryEntry {
+  string id = 1;
+  string product_id = 2;
+  int32 quantity_before = 3;
+  int32 quantity_after = 4;
+  int32 quantity_change = 5;
+  string operation_type = 6;
+  string reference_id = 7;
+  string reason = 8;
+  int64 created_at = 9;
+  string created_by = 10;
+}

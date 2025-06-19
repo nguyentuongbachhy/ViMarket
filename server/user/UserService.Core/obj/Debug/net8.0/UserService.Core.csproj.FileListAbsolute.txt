@@ -1,0 +1,13 @@
+/home/lenovo/source/ecommerce/server/user/UserService.Core/bin/Debug/net8.0/UserService.Core.deps.json
+/home/lenovo/source/ecommerce/server/user/UserService.Core/bin/Debug/net8.0/UserService.Core.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Core/bin/Debug/net8.0/UserService.Core.pdb
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.csproj.AssemblyReference.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.AssemblyInfoInputs.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.AssemblyInfo.cs
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.csproj.CoreCompileInputs.cache
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.sourcelink.json
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/refint/UserService.Core.dll
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/UserService.Core.pdb
+/home/lenovo/source/ecommerce/server/user/UserService.Core/obj/Debug/net8.0/ref/UserService.Core.dll

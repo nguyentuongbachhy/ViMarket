@@ -1,0 +1,3 @@
+obj/Debug/net8.0/User.cs \
+obj/Debug/net8.0/UserGrpc.cs: Protos/common.proto\
+ Protos/user.proto

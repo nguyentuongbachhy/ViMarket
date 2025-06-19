@@ -1,0 +1,48 @@
+server:
+  port: 9000
+  read_timeout: "60s"
+  write_timeout: "60s"
+  idle_timeout: "120s"
+
+services:
+  chatbot: "http://localhost:8000"
+  user: "http://localhost:5009"
+  product: "http://localhost:8082"
+  cart: "http://localhost:8002"
+  wishlist: "http://localhost:8084"
+  order: "http://localhost:8004"
+  review: "http://localhost:8005"
+
+jwt:
+  secret_key: "jYNKRd9KDzX+IG+6KWz31IXr+QX5GAQ1Svr3LWkzUSP3DpjKm4zsrlbf8B9b14EH"
+  algorithm: "HS512"
+  expiration_seconds: 86400
+  issuer: "ecommerce-api"
+  audience: "ecommerce-clients"
+
+log_level: "info"
+
+middleware:
+  enable_cors: true
+  environment: "development"
+  allowed_origins:
+    - "http://localhost:5173"
+    - "http://localhost:3000"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+    - "PATCH"
+  allowed_headers:
+    - "Origin"
+    - "Content-Type"
+    - "Accept"
+    - "Authorization"
+    - "X-Requested-With"
+    - "Access-Control-Request-Method"
+    - "Access-Control-Request-Headers"
+    - "Cache-Control"
+    - "X-Forwarded-For"
+    - "X-Forwarded-Proto"

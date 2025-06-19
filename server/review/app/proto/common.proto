@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ecommerce.common;
+
+message Empty {}
+
+message Status {
+  enum Code {
+    OK = 0;
+    ERROR = 1;
+    NOT_FOUND = 2;
+    INVALID_ARGUMENT = 3;
+  }
+  Code code = 1;
+  string message = 2;
+}
+
+message Metadata {
+  map<string, string> data = 1;
+}
