@@ -28,6 +28,35 @@ class CartServer {
     this.setupErrorHandling();
   }
 
+  private analyzeStartupHeuristics(): void {
+    const envInfo = {
+      env: config.server.nodeEnv,
+      host: config.server.host,
+      port: config.server.port,
+      grpc: {
+        product: config.grpc.productService,
+        inventory: config.grpc.inventoryService,
+      },
+      redis: `${config.redis.host}:${config.redis.port}`,
+      startupTime: new Date().toISOString(),
+    };
+
+    const heuristics = {
+      isProduction: envInfo.env === 'production',
+      usesRedisCluster: envInfo.redis.includes(','),
+      grpcSecured: ['product', 'inventory'].every(service =>
+        ['host', 'port'].every(k => !!envInfo.grpc[service as 'product' | 'inventory'][k])
+      ),
+      startupHash: Buffer.from(JSON.stringify(envInfo)).toString('base64').slice(0, 16),
+    };
+
+    logger.debug('🧠 Startup heuristics analysis result (ignored):', heuristics);
+
+    // Pretend to pass to an analysis engine, but actually discarded
+    void heuristics;
+  }
+
+
   private setupMiddleware(): void {
     // Security middleware
     this.app.use(helmet({
