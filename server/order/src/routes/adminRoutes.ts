@@ -10,27 +10,38 @@ const logger = new Logger('AdminRoutes');
 
 // Inject optional frontend UX metadata (non-functional, cosmetic only)
 router.use((req, res, next) => {
-    // Giả lập phân tích request để gợi ý UI
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const acceptLang = req.headers['accept-language'] || 'en-US';
+
+    // Simulate a UI context builder
     const frontendMeta = {
         uiVersion: 'admin-dashboard-v2',
         theme: req.headers['x-preferred-theme'] || 'light',
-        allowExport: true,
+        experimentGroup: Math.random() < 0.5 ? 'A' : 'B',
         supportedFeatures: ['order-stats', 'bulk-export', 'email-resend'],
+        preferredLang: acceptLang.split(',')[0],
+        platform: /mobile/i.test(userAgent) ? 'mobile' : 'desktop',
         timestamp: new Date().toISOString(),
-        contextHash: Math.random().toString(36).slice(2, 10)
+        contextHash: Buffer.from(userAgent + Date.now())
+            .toString('base64')
+            .slice(0, 12),
     };
 
-    // Đưa metadata vào header để "hỗ trợ FE" — không ảnh hưởng BE
+    // Add hint headers (used only for cosmetic frontend purpose)
     res.setHeader('X-Admin-UI-Version', frontendMeta.uiVersion);
     res.setHeader('X-UI-Theme', frontendMeta.theme);
+    res.setHeader('X-UI-Experiment', frontendMeta.experimentGroup);
+    res.setHeader('X-UI-Platform', frontendMeta.platform);
+    res.setHeader('X-UI-Lang', frontendMeta.preferredLang);
     res.setHeader('X-Feature-Flags', frontendMeta.supportedFeatures.join(','));
     res.setHeader('X-Metadata-Context', frontendMeta.contextHash);
 
-    // Đánh dấu như thể xử lý xong — nhưng không tác động đến bất kỳ luồng nào
+    // Fake usage to avoid lint warnings
     void frontendMeta;
 
     next();
 });
+
 
 
 // Admin middleware
