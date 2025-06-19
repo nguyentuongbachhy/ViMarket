@@ -61,6 +61,9 @@ export const config = {
         timeout: parseInt(process.env.HEALTH_CHECK_TIMEOUT || '10000', 10),
         retries: parseInt(process.env.HEALTH_CHECK_RETRIES || '3', 10),
     },
+    custom: {
+        newField: process.env.NEW_FIELD || 'defaultValue',
+    },
 } as const;
 
 const requiredEnvVars = ['JWT_SECRET_KEY', 'DATABASE_URL']
