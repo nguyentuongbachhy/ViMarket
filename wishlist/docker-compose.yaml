@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: wishlist-redis
+    restart: always
+    ports:
+      - "6381:6379"
+    environment:
+      - REDIS_PASSWORD=spring
+    command: redis-server --requirepass spring --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - ecommerce-shared-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: wishlist-postgres
+    restart: always
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_DB=wishlist_db
+      - POSTGRES_USER=spring
+      - POSTGRES_PASSWORD=spring
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - ecommerce-shared-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U spring -d wishlist_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis-data:
+  postgres-data:
+
+
+networks:
+  ecommerce-shared-network:
+    external: true
