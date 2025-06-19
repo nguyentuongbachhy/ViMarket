@@ -1,17 +1,19 @@
-// routes/search.tsx
-import { Grid, List } from 'lucide-react';
+import { Grid, List, SlidersHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { Sidebar } from '~/components';
-import { SearchResults, SearchSortOptions } from '~/components/features/search';
+import { ProductGrid } from '~/components/features/product/grid';
+import { ProductListView } from '~/components/features/product/list';
+import { SearchSortOptions } from '~/components/features/search';
 import type { FilterState } from '~/components/layout/sidebar/Sidebar.types';
 import { SearchInput } from '~/components/ui/search';
+import { InfiniteScroll } from '~/components/ui/scroll';
 import { useProductSearch } from '~/hooks/search';
 import { useSSRWindowSize } from '~/hooks/window/useWindowSize';
 import { cn } from '~/lib/utils';
 import type { Route } from "./+types/search";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({}: Route.MetaArgs) {
     return [
         { title: "Tìm kiếm | E-Commerce" },
         { name: "description", content: "Tìm kiếm sản phẩm, thương hiệu yêu thích." },
@@ -50,7 +52,6 @@ export default function SearchPage() {
         products,
         loading,
         error,
-        meta,
         hasMore,
         isEmpty,
         totalResults,
@@ -64,9 +65,9 @@ export default function SearchPage() {
         enableCache: true,
         cacheTime: 5 * 60 * 1000,
         size: 20,
-        autoSearch: false, // We'll control when to search
+        autoSearch: false,
         debounceMs: 500,
-        minQueryLength: 1, // Allow single character searches
+        minQueryLength: 1,
     });
 
     // Sync filters with URL on mount and URL changes
@@ -76,7 +77,6 @@ export default function SearchPage() {
 
         // Trigger search if there's a query
         if (urlFilters.q && urlFilters.q.trim()) {
-            // Ensure sortBy is of the correct type
             const allowedSortBy = [
                 "price",
                 "rating",
@@ -102,7 +102,6 @@ export default function SearchPage() {
     const updateURL = (filters: FilterState) => {
         const newParams = new URLSearchParams();
 
-        // Add all filter parameters to URL
         if (filters.q?.trim()) {
             newParams.set('q', filters.q.trim());
         }
@@ -143,7 +142,6 @@ export default function SearchPage() {
             q: query,
         };
 
-        // Ensure sortBy is of the correct type
         const allowedSortBy = [
             "price",
             "rating",
@@ -163,7 +161,6 @@ export default function SearchPage() {
         setCurrentFilters(safeFilters);
         updateURL(safeFilters);
 
-        // Re-search with new query if there's a query
         if (safeFilters.q?.trim()) {
             search(safeFilters.q, safeFilters);
         }
@@ -176,7 +173,6 @@ export default function SearchPage() {
             ...newFilters,
         };
 
-        // Ensure sortBy is of the correct type
         const allowedSortBy = [
             "price",
             "rating",
@@ -196,12 +192,10 @@ export default function SearchPage() {
         setCurrentFilters(safeFilters);
         updateURL(safeFilters);
 
-        // Re-search with new filters if there's a query
         if (safeFilters.q?.trim()) {
             search(safeFilters.q, safeFilters);
         }
     };
-
 
     // Handle category selection
     const handleCategorySelect = (category: any) => {
@@ -214,7 +208,6 @@ export default function SearchPage() {
             categoryIds: newCategoryIds.length > 0 ? newCategoryIds : undefined,
         });
 
-        // Close mobile menu after selection
         if (windowWidth < 768) {
             setMenuOpen(false);
         }
@@ -223,13 +216,12 @@ export default function SearchPage() {
     // Handle clear filters
     const handleClearFilters = () => {
         const clearedFilters = {
-            q: currentFilters.q, // Keep the search query
+            q: currentFilters.q,
         };
 
         setCurrentFilters(clearedFilters);
         updateURL(clearedFilters);
 
-        // Re-search with cleared filters if there's a query
         if (clearedFilters.q?.trim()) {
             search(clearedFilters.q, clearedFilters);
         }
@@ -250,7 +242,7 @@ export default function SearchPage() {
     ].reduce((sum, count) => sum + count, 0);
 
     return (
-        <div className="min-height">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
             <div className="w-full flex flex-col md:flex-row relative">
                 {/* Sidebar with Categories & Filters */}
                 <Sidebar
@@ -268,15 +260,13 @@ export default function SearchPage() {
                 {/* Mobile menu button */}
                 {showMobileButton && (
                     <button
-                        className="md:hidden fixed top-20 left-4 z-30 bg-gray-800 p-2 rounded-md shadow-lg hover:bg-gray-700 transition-colors"
+                        className="md:hidden fixed top-20 left-4 z-30 bg-gray-800 p-3 rounded-xl shadow-lg hover:bg-gray-700 transition-all duration-200 border border-gray-600"
                         onClick={() => setMenuOpen(true)}
                         aria-label="Open menu"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        <SlidersHorizontal className="w-5 h-5 text-white" />
                         {activeFiltersCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold animate-pulse">
                                 {activeFiltersCount}
                             </span>
                         )}
@@ -284,10 +274,10 @@ export default function SearchPage() {
                 )}
 
                 {/* Main Content */}
-                <div className="flex-1 max-w-full mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-3 space-y-4 sm:space-y-6 w-full">
+                <div className="flex-1 max-w-full mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6">
                     {/* Search Header */}
-                    <div className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-20">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div className="bg-gradient-to-r from-gray-800 to-gray-900 shadow-xl rounded-2xl border border-gray-700 sticky top-0 z-20">
+                        <div className="px-6 py-6">
                             <div className="flex flex-col space-y-4">
                                 {/* Search Input */}
                                 <div className="flex-1">
@@ -295,7 +285,7 @@ export default function SearchPage() {
                                         value={currentFilters.q || ''}
                                         onSearch={handleSearch}
                                         placeholder="Tìm kiếm sản phẩm, thương hiệu..."
-                                        className="w-full max-w-2xl bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full max-w-2xl bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
                                         loading={loading}
                                     />
                                 </div>
@@ -321,15 +311,9 @@ export default function SearchPage() {
                                                     </span>
                                                 ) : null}
 
-                                                {currentFilters.brandIds?.length ? (
+                                                {(currentFilters.brandIds?.length || currentFilters.brandNames?.length) ? (
                                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-600 text-white">
-                                                        {currentFilters.brandIds.length} thương hiệu
-                                                    </span>
-                                                ) : null}
-
-                                                {currentFilters.brandNames?.length ? (
-                                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-600 text-white">
-                                                        {currentFilters.brandNames.length} tên thương hiệu
+                                                        {(currentFilters.brandIds?.length || 0) + (currentFilters.brandNames?.length || 0)} thương hiệu
                                                     </span>
                                                 ) : null}
 
@@ -373,14 +357,14 @@ export default function SearchPage() {
                                         />
 
                                         {/* View Mode Toggle */}
-                                        <div className="flex border border-gray-600 rounded-md overflow-hidden bg-gray-800">
+                                        <div className="flex border border-gray-600 rounded-lg overflow-hidden bg-gray-700">
                                             <button
                                                 onClick={() => setViewMode('grid')}
                                                 className={cn(
                                                     "p-2 transition-colors",
                                                     viewMode === 'grid'
                                                         ? "bg-blue-600 text-white"
-                                                        : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                                                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                                                 )}
                                                 title="Xem dạng lưới"
                                             >
@@ -392,7 +376,7 @@ export default function SearchPage() {
                                                     "p-2 transition-colors",
                                                     viewMode === 'list'
                                                         ? "bg-blue-600 text-white"
-                                                        : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                                                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                                                 )}
                                                 title="Xem dạng danh sách"
                                             >
@@ -406,57 +390,62 @@ export default function SearchPage() {
                     </div>
 
                     {/* Search Results */}
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div className="bg-gray-900 rounded-lg shadow-lg">
-                            <SearchResults
-                                products={products}
-                                loading={loading}
-                                error={error}
-                                isEmpty={isEmpty}
-                                hasMore={hasMore}
-                                viewMode={viewMode}
-                                query={currentQuery}
-                                onLoadMore={loadMore}
-                                onRetry={refresh}
-                                onClearError={clearError}
-                            />
-                        </div>
+                    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl border border-gray-700 p-6">
+                        <InfiniteScroll
+                            hasMore={hasMore}
+                            loading={loading}
+                            onLoadMore={loadMore}
+                            errorMessage={error || undefined}
+                            onRetry={refresh}
+                            loadingVariant="branded"
+                            threshold={300}
+                        >
+                            {currentQuery && !isEmpty ? (
+                                viewMode === 'grid' ? (
+                                    <ProductGrid
+                                        products={products}
+                                        loading={loading && products.length === 0}
+                                        error={error}
+                                        hasMore={hasMore}
+                                        cols={4}
+                                        gap="md"
+                                        showLoadMoreButton={false}
+                                        emptyMessage="Không tìm thấy sản phẩm nào phù hợp"
+                                        className="min-h-[400px]"
+                                    />
+                                ) : (
+                                    <ProductListView
+                                        products={products}
+                                        loading={loading && products.length === 0}
+                                        error={error}
+                                        showBrand={true}
+                                        showSeller={false}
+                                    />
+                                )
+                            ) : (
+                                <div className="text-center py-16">
+                                    <div className="max-w-md mx-auto">
+                                        <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
+                                            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-xl font-semibold text-white mb-3">
+                                            {!currentQuery ? 'Nhập từ khóa để tìm kiếm' : 'Không tìm thấy kết quả'}
+                                        </h3>
+                                        <p className="text-gray-400">
+                                            {!currentQuery 
+                                                ? 'Hãy nhập tên sản phẩm, thương hiệu để bắt đầu tìm kiếm'
+                                                : `Không có sản phẩm nào phù hợp với "${currentQuery}"`
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </InfiniteScroll>
                     </div>
                 </div>
             </div>
-
-            {/* Enhanced Mobile Responsive Styles */}
-            <style>{`
-                /* Custom focus styles for better accessibility */
-                .search-input:focus-within {
-                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-                }
-                
-                /* Loading shimmer effect */
-                @keyframes shimmer {
-                    0% {
-                        background-position: -468px 0;
-                    }
-                    100% {
-                        background-position: 468px 0;
-                    }
-                }
-                
-                .loading-shimmer {
-                    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
-                    background-size: 468px 104px;
-                    animation: shimmer 1.5s infinite;
-                }
-
-                /* Smooth transitions for filter badges */
-                .filter-badge {
-                    transition: all 0.2s ease-in-out;
-                }
-                
-                .filter-badge:hover {
-                    transform: scale(1.05);
-                }
-            `}</style>
         </div>
     );
 }
