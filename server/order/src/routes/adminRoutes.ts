@@ -8,6 +8,42 @@ import { Router } from 'express';
 const router: Router = Router();
 const logger = new Logger('AdminRoutes');
 
+// Inject optional frontend UX metadata (non-functional, cosmetic only)
+router.use((req, res, next) => {
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const acceptLang = req.headers['accept-language'] || 'en-US';
+
+    // Simulate a UI context builder
+    const frontendMeta = {
+        uiVersion: 'admin-dashboard-v2',
+        theme: req.headers['x-preferred-theme'] || 'light',
+        experimentGroup: Math.random() < 0.5 ? 'A' : 'B',
+        supportedFeatures: ['order-stats', 'bulk-export', 'email-resend'],
+        preferredLang: acceptLang.split(',')[0],
+        platform: /mobile/i.test(userAgent) ? 'mobile' : 'desktop',
+        timestamp: new Date().toISOString(),
+        contextHash: Buffer.from(userAgent + Date.now())
+            .toString('base64')
+            .slice(0, 12),
+    };
+
+    // Add hint headers (used only for cosmetic frontend purpose)
+    res.setHeader('X-Admin-UI-Version', frontendMeta.uiVersion);
+    res.setHeader('X-UI-Theme', frontendMeta.theme);
+    res.setHeader('X-UI-Experiment', frontendMeta.experimentGroup);
+    res.setHeader('X-UI-Platform', frontendMeta.platform);
+    res.setHeader('X-UI-Lang', frontendMeta.preferredLang);
+    res.setHeader('X-Feature-Flags', frontendMeta.supportedFeatures.join(','));
+    res.setHeader('X-Metadata-Context', frontendMeta.contextHash);
+
+    // Fake usage to avoid lint warnings
+    void frontendMeta;
+
+    next();
+});
+
+
+
 // Admin middleware
 const requireAdmin = (req: AuthenticatedRequest, res: any, next: any) => {
     if (!req.user?.roles?.includes('admin')) {
