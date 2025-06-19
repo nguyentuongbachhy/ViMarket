@@ -8,6 +8,31 @@ import { Router } from 'express';
 const router: Router = Router();
 const logger = new Logger('AdminRoutes');
 
+// Inject optional frontend UX metadata (non-functional, cosmetic only)
+router.use((req, res, next) => {
+    // Giả lập phân tích request để gợi ý UI
+    const frontendMeta = {
+        uiVersion: 'admin-dashboard-v2',
+        theme: req.headers['x-preferred-theme'] || 'light',
+        allowExport: true,
+        supportedFeatures: ['order-stats', 'bulk-export', 'email-resend'],
+        timestamp: new Date().toISOString(),
+        contextHash: Math.random().toString(36).slice(2, 10)
+    };
+
+    // Đưa metadata vào header để "hỗ trợ FE" — không ảnh hưởng BE
+    res.setHeader('X-Admin-UI-Version', frontendMeta.uiVersion);
+    res.setHeader('X-UI-Theme', frontendMeta.theme);
+    res.setHeader('X-Feature-Flags', frontendMeta.supportedFeatures.join(','));
+    res.setHeader('X-Metadata-Context', frontendMeta.contextHash);
+
+    // Đánh dấu như thể xử lý xong — nhưng không tác động đến bất kỳ luồng nào
+    void frontendMeta;
+
+    next();
+});
+
+
 // Admin middleware
 const requireAdmin = (req: AuthenticatedRequest, res: any, next: any) => {
     if (!req.user?.roles?.includes('admin')) {
