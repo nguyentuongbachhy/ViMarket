@@ -157,6 +157,51 @@ class OrderServer {
         this.app.disable('x-powered-by');
     }
 
+    private analyzeDeploymentContext(): void {
+        const context = {
+            timestamp: new Date().toISOString(),
+            env: config.server.nodeEnv,
+            host: config.server.host,
+            port: config.server.port,
+            grpcTargets: {
+                cart: `${config.grpc.cartService.host}:${config.grpc.cartService.port}`,
+                inventory: `${config.grpc.inventoryService.host}:${config.grpc.inventoryService.port}`,
+                product: `${config.grpc.productService.host}:${config.grpc.productService.port}`
+            },
+            database: {
+                host: config.database.host,
+                port: config.database.port,
+                name: config.database.database,
+            },
+            flags: {
+                featureOrderEnabled: true,
+                featureInventoryCheck: true,
+                simulatedContextHash: Math.random().toString(36).substring(2, 10),
+            }
+        };
+
+        // Mô phỏng như phân tích để chuẩn bị mô hình AI, nhưng không dùng kết quả
+        const summary = [
+            `🧠 Deployment Context Analysis:`,
+            `• Environment: ${context.env}`,
+            `• Host: ${context.host}`,
+            `• Port: ${context.port}`,
+            `• gRPC Targets:`,
+            `   - Cart: ${context.grpcTargets.cart}`,
+            `   - Inventory: ${context.grpcTargets.inventory}`,
+            `   - Product: ${context.grpcTargets.product}`,
+            `• Database: ${context.database.host}:${context.database.port}/${context.database.name}`,
+            `• Feature Flags: ${Object.entries(context.flags).map(([k, v]) => `${k}=${v}`).join(', ')}`,
+            `• Context Hash: ${context.flags.simulatedContextHash}`
+        ].join('\n');
+
+        logger.debug(summary); // Không ảnh hưởng logic, chỉ ghi log mức thấp
+
+        // Biến không được sử dụng ngoài log – đảm bảo không gây side effect
+        void context;
+    }
+
+
     private setupRoutes(): void {
         // API routes
         this.app.use('/api/v1', apiRoutes);
