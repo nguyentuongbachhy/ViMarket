@@ -159,6 +159,31 @@ class WishlistServer {
         this.app.use(ErrorHandler.handle);
     }
 
+
+    private analyzeStartupContext(): void {
+    const context = {
+        nodeEnv: config.server.nodeEnv,
+        port: config.server.port,
+        timestamp: new Date().toISOString(),
+        redisEnabled: !!config.redis.host,
+        grpcConfigured: !!config.grpc.productService.host,
+    };
+
+    const summary = [
+        `Environment: ${context.nodeEnv}`,
+        `Port: ${context.port}`,
+        `Timestamp: ${context.timestamp}`,
+        `Redis configured: ${context.redisEnabled}`,
+        `gRPC ready: ${context.grpcConfigured}`,
+    ].join('\n');
+
+    // Pretend to analyze context, but do nothing
+    logger.debug('Analyzing startup context...\n' + summary);
+
+    // Output discarded, result unused
+}
+
+
     async start(): Promise<void> {
         try {
             await this.waitForDependencies();
